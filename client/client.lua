@@ -1,71 +1,86 @@
+-- Helper function for toggling the NUI frame
 local function toggleNuiFrame(shouldShow)
-  SetNuiFocus(shouldShow, shouldShow)
-  SendReactMessage('setVisible', shouldShow)
+    SetNuiFocus(shouldShow, shouldShow)
+    SendReactMessage('setVisible', shouldShow)
 end
 
+-- COMMANDS
+-- calendar brings up the NUI calendar
 RegisterCommand('calendar', function()
-  toggleNuiFrame(true)
-  debugPrint('Show NUI frame')
+    toggleNuiFrame(true)
 end, false)
 
+-- print_events tells the server to print persisted events
 RegisterCommand('print_events', function()
-  print('[Calendar] Print Events')
-  TriggerServerEvent('prp_calendar:printEvents')
+    TriggerServerEvent('prp_calendar:printEvents')
 end, false)
 
+-- NUI CALLBACKS
+-- hideFrame hides the NUI frame
 RegisterNUICallback('hideFrame', function(_, cb)
-  toggleNuiFrame(false)
-  debugPrint('Hide NUI frame')
-  cb({})
+    toggleNuiFrame(false)
+    cb({})
 end)
 
-RegisterNUICallback('getEvents', function(data, cb)
-  print('[Calendar] NUI Callback: getEvents')
-  TriggerServerEvent('prp_calendar:getEvents')
-  cb('ok')
+-- getEvents is used to get events from server
+RegisterNUICallback('getEvents', function(_, cb)
+    TriggerServerEvent('prp_calendar:getEvents')
+    cb('ok')
 end)
 
+-- createEvent is used for creating an event
 RegisterNUICallback('createEvent', function(data, cb)
-  print('[Calendar] NUI Callback: createEvent', data)
-  TriggerServerEvent('prp_calendar:createEvent', data)
-  cb('ok')
+    TriggerServerEvent('prp_calendar:createEvent', data)
+    cb('ok')
 end)
 
+-- editEvent is used for editing an event
 RegisterNUICallback('editEvent', function(data, cb)
-  print('[Calendar] NUI Callback: editEvent', data)
-  TriggerServerEvent('prp_calendar:editEvent', data)
-  cb('ok')
+    TriggerServerEvent('prp_calendar:editEvent', data)
+    cb('ok')
 end)
 
+-- deleteEvent is used for deleting an event
 RegisterNUICallback('deleteEvent', function(data, cb)
-  local eventId = data.eventId
-  print('[Calendar] NUI Callback: deleteEvent', eventId)
-  TriggerServerEvent('prp_calendar:deleteEvent', eventId)
-  cb('ok')
+    local eventId = data.eventId
+    TriggerServerEvent('prp_calendar:deleteEvent', eventId)
+    cb('ok')
 end)
 
+-- NET EVENTS
+-- receiveEvents sends server-provided events to NUI
 RegisterNetEvent('prp_calendar:receiveEvents', function(events)
-  print('[Calendar] Received events from server')
-  SendNUIMessage({ action = 'receiveEvents', events = events })
+    SendNUIMessage({
+        action = 'receiveEvents',
+        events = events
+    })
 end)
 
+-- refreshEvents instructs the NUI frame to re-fetch events
 RegisterNetEvent('prp_calendar:refreshEvents', function()
-  print('[Calendar] Refresh Events')
-  SendNUIMessage({
-      action = 'fetchEvents'
-  })
+    SendNUIMessage({
+        action = 'fetchEvents'
+    })
 end)
 
+-- eventDeleted instructs the NUI frame about the result of event deletion
 RegisterNetEvent('prp_calendar:eventDeleted', function(response)
-  print('[Calendar] Event Deleted', response)
-  SendNUIMessage({
-      action = 'fetchEvents'
-  })
+    if response.success then
+        SendNUIMessage({
+            action = 'fetchEvents'
+        })
+    else
+        print("eventDeleted received error: " .. response.error)
+    end
 end)
 
+-- eventEdited instructs the NUI frame about the result of event edit
 RegisterNetEvent('prp_calendar:eventEdited', function(response)
-  print('[Calendar] Event Edited', response)
-  SendNUIMessage({
-      action = 'fetchEvents'
-  })
+    if response.success then
+        SendNUIMessage({
+            action = 'fetchEvents'
+        })
+    else
+        print("eventEdited received error: " .. response.error)
+    end
 end)

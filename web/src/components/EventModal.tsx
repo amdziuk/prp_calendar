@@ -68,10 +68,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onEdi
     };
 
     const handleInvite = () => {
-        const guestUserId = prompt("Enter the guest's User ID:");
-        if (guestUserId) {
-            onInvite(event.id, guestUserId);
-        }
+        // To Implement
     };
 
     return (

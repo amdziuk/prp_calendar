@@ -1,102 +1,102 @@
 .event-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    text-align: center;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background: #282c34;
-    margin: 5% auto;
-    padding: 20px;
-    width: 40%;
-    border-radius: 5px;
+  background: #282c34;
+  margin: 5% auto;
+  padding: 20px;
+  width: 40%;
+  border-radius: 5px;
 }
 
 .modal-content h2 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .modal-content label {
-    display: block;
-    margin-top: 10px;
+  display: block;
+  margin-top: 10px;
 }
 
 .modal-content input,
 .modal-content textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
 }
 
 .modal-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .modal-buttons button {
-    margin-left: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
+  margin-left: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
 .confirmation-dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    text-align: center;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3;
-    background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .confirmation-dialog {
-    background: #282c34;
-    margin: 5% auto;
-    padding: 20px;
-    width: 300px;
-    border-radius: 5px;
+  background: #282c34;
+  margin: 5% auto;
+  padding: 20px;
+  width: 300px;
+  border-radius: 5px;
 }
 
 .dialog-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
 .confirm-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .cancel-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .confirm-button:hover, .cancel-button:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }

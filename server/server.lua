@@ -1,15 +1,20 @@
--- Table to store all events
+-- In a full implementation, we must use some cloud-hosted database (eg. Postgres)
+-- for storing events so that they're properly persisted. For the purposes of this
+-- demo, I am just using a table to store events
 local events = {}
 
+-- License identifier constant
+local IDENTIFIER_LICENSE <const> = 0
+
+-- In a full implementation, I would suggest the use of a UUID/GUID instead, but
+-- using a stringified int for this demo
 local function generateEventId()
     return tostring(math.random(1000000, 9999999))
 end
 
--- Event to get events for a user
+-- NetEvent to get events for a user
 RegisterNetEvent('prp_calendar:getEvents', function()
-    local playerId = source
-    local identifiers = GetPlayerIdentifiers(playerId)
-    local userId = identifiers[1]
+    local userId = GetPlayerIdentifier(source, IDENTIFIER_LICENSE)
 
     -- Filter events where the user is an owner or guest
     local userEvents = {}
@@ -20,15 +25,14 @@ RegisterNetEvent('prp_calendar:getEvents', function()
     end
 
     -- Send the events back to the client who requested them
-    TriggerClientEvent('prp_calendar:receiveEvents', playerId, userEvents)
+    TriggerClientEvent('prp_calendar:receiveEvents', source, userEvents)
 end)
 
+-- NetEvent to create an event with calling player as owner
 RegisterNetEvent('prp_calendar:createEvent', function(eventData)
-    local playerId = source
-    local identifiers = GetPlayerIdentifiers(playerId)
-    local userId = identifiers[1]
-
+    local userId = GetPlayerIdentifier(source, IDENTIFIER_LICENSE)
     local eventId = generateEventId()
+
     local newEvent = {
         id = eventId,
         title = eventData.title,
@@ -41,16 +45,26 @@ RegisterNetEvent('prp_calendar:createEvent', function(eventData)
     }
     events[eventId] = newEvent
 
-    TriggerClientEvent('prp_calendar:refreshEvents', playerId)
+    -- Instruct the client to refresh events
+    TriggerClientEvent('prp_calendar:refreshEvents', source)
 end)
 
+-- NetEvent to create an event with calling player as owner
 RegisterNetEvent('prp_calendar:editEvent', function(eventData)
-    local playerId = source
-    local identifiers = GetPlayerIdentifiers(playerId)
-    local userId = identifiers[1]
+    -- Example of validations I typically put into place
+    if not eventData or not eventData.id then
+        TriggerClientEvent(
+            'prp_calendar:eventEdited',
+            source,
+            { success = false, error = 'Missing event data' }
+        )
+    end
+
+    local userId = GetPlayerIdentifier(source, IDENTIFIER_LICENSE)
     local eventId = eventData.id
     local event = events[eventId]
 
+    -- This includes a pseudo-auth check which we'd probably expand upon in a proper implementation for PRP
     if event and table.contains(event.owners, userId) then
         event.title = eventData.title
         event.description = eventData.description
@@ -58,36 +72,41 @@ RegisterNetEvent('prp_calendar:editEvent', function(eventData)
         event.start_time = eventData.start_time
         event.end_time = eventData.end_time
         events[eventId] = event
-        TriggerClientEvent('prp_calendar:eventEdited', playerId, { success = true, eventId = eventId })
+        TriggerClientEvent(
+            'prp_calendar:eventEdited',
+            source,
+            { success = true, eventId = eventId }
+        )
     else
-        TriggerClientEvent('prp_calendar:eventEdited', playerId, { success = false, error = 'You do not have permission to edit this event.' })
+        TriggerClientEvent(
+            'prp_calendar:eventEdited',
+            source,
+            { success = false, error = 'You do not have permission to edit this event' }
+        )
     end
 end)
 
+-- NetEvent to delete an event
 RegisterNetEvent('prp_calendar:deleteEvent', function(eventId)
-    print("In: prp_calendar:deleteEvent")
-    print("EventId: " .. eventId)
-    local playerId = source
-    local identifiers = GetPlayerIdentifiers(playerId)
-    local userId = identifiers[1]
+    local userId = GetPlayerIdentifier(source, IDENTIFIER_LICENSE)
 
     local event = events[eventId]
     if event and table.contains(event.owners, userId) then
         events[eventId] = nil
-        TriggerClientEvent('prp_calendar:eventDeleted', playerId, { success = true, eventId = eventId })
+        TriggerClientEvent('prp_calendar:eventDeleted', source, { success = true, eventId = eventId })
     else
-        TriggerClientEvent('prp_calendar:eventDeleted', playerId, { success = false, error = 'You do not have permission to delete this event.' })
+        TriggerClientEvent('prp_calendar:eventDeleted', source, { success = false, error = 'You do not have permission to delete this event.' })
     end
 end)
 
+-- Helper function for server to print server logs of currently persisted events
 RegisterNetEvent('prp_calendar:printEvents', function()
-    print("printEvents start")
     for _, event in pairs(events) do
         PrintEvent(event)
     end
-    print("printEvents end")
 end)
 
+-- Helper function for printing an event
 function PrintEvent(event)
     print("Event ID: " .. event.id)
     print("Title: " .. event.title)
@@ -99,6 +118,7 @@ function PrintEvent(event)
     print("Guests: " .. table.concat(event.guests, ", "))
 end
 
+-- Helper function for checking if a table contains an element
 function table.contains(table, element)
     for _, value in pairs(table) do
         if value == element then

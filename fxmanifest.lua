@@ -12,11 +12,12 @@ games {
 ui_page 'web/build/index.html'
 
 client_scripts {
-  'client/**/*',
+  'client/client.lua',
+  'client/utils.lua',
 }
 
 server_scripts {
-  'server/**/*',
+  'server/server.lua',
 }
 
 files {
