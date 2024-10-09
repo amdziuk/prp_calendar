@@ -87,8 +87,18 @@ const App: React.FC = () => {
     setSelectedDate({start: arg.start, end: arg.end});
   };
 
-  const handleEventDelete = (eventData: any) => {
+  const handleEventDelete = (eventId: string) => {
     console.log('Clicked: handleEventDelete');
+    fetch(`https://${RESOURCE_NAME}/deleteEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ eventId }),
+    }).catch((error) => {
+      console.error('Error deleting event:', error);
+    });
+    setModalOpen(false);
   };
   
   const handleEventSubmit = (eventData: any) => {

@@ -23,7 +23,6 @@ RegisterNetEvent('prp_calendar:getEvents', function()
     TriggerClientEvent('prp_calendar:receiveEvents', playerId, userEvents)
 end)
 
--- Event to create a new event
 RegisterNetEvent('prp_calendar:createEvent', function(eventData)
     local playerId = source
     local identifiers = GetPlayerIdentifiers(playerId)
@@ -43,6 +42,22 @@ RegisterNetEvent('prp_calendar:createEvent', function(eventData)
     events[eventId] = newEvent
 
     TriggerClientEvent('prp_calendar:refreshEvents', playerId)
+end)
+
+RegisterNetEvent('prp_calendar:deleteEvent', function(eventId)
+    print("In: prp_calendar:deleteEvent")
+    print("EventId: " .. eventId)
+    local playerId = source
+    local identifiers = GetPlayerIdentifiers(playerId)
+    local userId = identifiers[1]
+
+    local event = events[eventId]
+    if event and table.contains(event.owners, userId) then
+        events[eventId] = nil
+        TriggerClientEvent('prp_calendar:eventDeleted', playerId, { success = true, eventId = eventId })
+    else
+        TriggerClientEvent('prp_calendar:eventDeleted', playerId, { success = false, error = 'You do not have permission to delete this event.' })
+    end
 end)
 
 RegisterNetEvent('prp_calendar:printEvents', function()

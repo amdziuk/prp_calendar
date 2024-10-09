@@ -31,6 +31,13 @@ RegisterNUICallback('createEvent', function(data, cb)
   cb('ok')
 end)
 
+RegisterNUICallback('deleteEvent', function(data, cb)
+  local eventId = data.eventId
+  print('[Calendar] NUI Callback: deleteEvent', eventId)
+  TriggerServerEvent('prp_calendar:deleteEvent', eventId)
+  cb('ok')
+end)
+
 RegisterNetEvent('prp_calendar:receiveEvents', function(events)
   print('[Calendar] Received events from server')
   SendNUIMessage({ action = 'receiveEvents', events = events })
@@ -38,6 +45,13 @@ end)
 
 RegisterNetEvent('prp_calendar:refreshEvents', function()
   print('[Calendar] Refresh Events')
+  SendNUIMessage({
+      action = 'fetchEvents'
+  })
+end)
+
+RegisterNetEvent('prp_calendar:eventDeleted', function(response)
+  print('[Calendar] Event Deleted', response)
   SendNUIMessage({
       action = 'fetchEvents'
   })
