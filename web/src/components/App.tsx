@@ -115,6 +115,20 @@ const App: React.FC = () => {
     setModalOpen(false);
   };
 
+  const handleEventEdit = (eventData: any) => {
+    console.log('Editing event:', eventData);
+    fetch(`https://prp_calendar/editEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    }).catch((error) => {
+      console.error('Error editing event:', error);
+    });
+    setModalOpen(false);
+  };
+
   const handleInviteGuest = (eventData: any) => {
     console.log('Clicked: handleInviteGuest');
   };
@@ -155,6 +169,7 @@ const App: React.FC = () => {
                   event={selectedEvent}
                   onClose={handleCloseModal}
                   onSubmit={handleEventSubmit}
+                  onEdit={handleEventEdit}
                   onDelete={handleEventDelete}
                   onInvite={handleInviteGuest}
               />

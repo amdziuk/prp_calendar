@@ -44,6 +44,26 @@ RegisterNetEvent('prp_calendar:createEvent', function(eventData)
     TriggerClientEvent('prp_calendar:refreshEvents', playerId)
 end)
 
+RegisterNetEvent('prp_calendar:editEvent', function(eventData)
+    local playerId = source
+    local identifiers = GetPlayerIdentifiers(playerId)
+    local userId = identifiers[1]
+    local eventId = eventData.id
+    local event = events[eventId]
+
+    if event and table.contains(event.owners, userId) then
+        event.title = eventData.title
+        event.description = eventData.description
+        event.location = eventData.location
+        event.start_time = eventData.start_time
+        event.end_time = eventData.end_time
+        events[eventId] = event
+        TriggerClientEvent('prp_calendar:eventEdited', playerId, { success = true, eventId = eventId })
+    else
+        TriggerClientEvent('prp_calendar:eventEdited', playerId, { success = false, error = 'You do not have permission to edit this event.' })
+    end
+end)
+
 RegisterNetEvent('prp_calendar:deleteEvent', function(eventId)
     print("In: prp_calendar:deleteEvent")
     print("EventId: " .. eventId)

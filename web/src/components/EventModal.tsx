@@ -6,11 +6,12 @@ interface EventModalProps {
     event: any;
     onClose: () => void;
     onSubmit: (eventData: any) => void;
+    onEdit: (eventData: any) => void;
     onDelete: (eventId: string) => void;
     onInvite: (eventId: string, guestUserId: string) => void;
 }
 
-const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDelete, onInvite }) => {
+const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onEdit, onDelete, onInvite }) => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const isEditMode = !!event.id;
 
@@ -19,14 +20,15 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     };
 
+    const [id, setID] = useState(event.id || '');
     const [title, setTitle] = useState(event.title || '');
     const [description, setDescription] = useState(event.extendedProps?.description || '');
     const [location, setLocation] = useState(event.extendedProps?.location || '');
     const [startTime, setStartTime] = useState(
-        isEditMode || event.start ? formatDateTimeInput(new Date(event.start)) : formatDateTimeInput(new Date())
+        event.start ? formatDateTimeInput(new Date(event.start)) : formatDateTimeInput(new Date())
     );
     const [endTime, setEndTime] = useState(
-        isEditMode || event.end ? formatDateTimeInput(new Date(event.end)) : formatDateTimeInput(new Date())
+        event.end ? formatDateTimeInput(new Date(event.end)) : formatDateTimeInput(new Date())
     );
 
     const handleSubmit = () => {
@@ -38,6 +40,18 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
             end_time: endTime
         };
         onSubmit(eventData);
+    };
+
+    const handleEdit = () => {
+        const eventData = {
+            id,
+            title,
+            description,
+            location,
+            start_time: startTime,
+            end_time: endTime
+        };
+        onEdit(eventData);
     };
 
     const handleDelete = () => {
@@ -95,7 +109,8 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
                     onChange={e => setEndTime(e.target.value)}
                 />
                 <div className="modal-buttons">
-                    <button onClick={handleSubmit}>Save</button>
+                    {!isEditMode && <button onClick={handleSubmit}>Create</button>}
+                    {isEditMode && <button onClick={handleEdit}>Edit</button>}
                     {isEditMode && <button onClick={handleDelete}>Delete</button>}
                     {isEditMode && <button onClick={handleInvite}>Invite Guest</button>}
                     <button onClick={onClose}>Cancel</button>
