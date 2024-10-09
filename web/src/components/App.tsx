@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from '@fullcalendar/react';
 import { DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -22,6 +22,54 @@ const App: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<any>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const RESOURCE_NAME = 'prp_calendar';
+
+  const fetchEvents = () => {
+    console.log('Fetching events...');
+    fetch(`https://${RESOURCE_NAME}/getEvents`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    })
+    .catch((error) => {
+      console.error('Error fetching events:', error);
+    });
+  };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data;
+      console.log('NUI Message Received:', data);
+
+      if (data.action === 'fetchEvents') {
+        fetchEvents();
+      } else if (data.action === 'receiveEvents') {
+        console.log('NUI Action: receiveEvents', data.events);
+        const formattedEvents = data.events.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          start: event.start_time,
+          end: event.end_time,
+          extendedProps: {
+            description: event.description,
+            location: event.location,
+            owners: event.owners,
+            guests: event.guests,
+          },
+        }));
+        setEvents(formattedEvents);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   const handleCreateEventClick = () => {
     // Use the selected date or current date if none is selected
@@ -44,7 +92,16 @@ const App: React.FC = () => {
   };
   
   const handleEventSubmit = (eventData: any) => {
-    console.log('Clicked: handleEventSubmit');
+    console.log('Submitting event:', eventData);
+    fetch(`https://prp_calendar/createEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    }).catch((error) => {
+      console.error('Error submitting event:', error);
+    });
   };
 
   const handleInviteGuest = (eventData: any) => {
@@ -73,6 +130,7 @@ const App: React.FC = () => {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
+            events={events}
             select={handleDateSelect}
             eventClick={handleEventClick}
             selectable={true}
