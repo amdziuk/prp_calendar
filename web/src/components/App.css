@@ -49,3 +49,8 @@
 .fc .fc-day-today {
   background-color: #2b4c6a;
 }
+
+.fc-toolbar-title {
+  width: 220px;
+  text-align: center;
+}

@@ -51,17 +51,6 @@ const App: React.FC = () => {
     console.log('Clicked: handleInviteGuest');
   };
 
-  const handleDateClick = (arg: DateClickArg) => {
-    console.log('Date clicked:', arg.dateStr);
-    setSelectedEvent({
-        start: arg.dateStr,
-        end: arg.dateStr
-    });
-    setSelectedDate({
-        start: arg.dateStr
-    });
-  };
-
   const handleEventClick = (clickInfo: EventClickArg) => {
     console.log('Event clicked:', clickInfo.event);
     setSelectedEvent(clickInfo.event);
@@ -84,7 +73,6 @@ const App: React.FC = () => {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
-            dateClick={handleDateClick}
             select={handleDateSelect}
             eventClick={handleEventClick}
             selectable={true}
