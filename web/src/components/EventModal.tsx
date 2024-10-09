@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ConfirmationDialog from './ConfirmationDialog';
 import './EventModal.css';
 
 interface EventModalProps {
@@ -10,6 +11,7 @@ interface EventModalProps {
 }
 
 const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDelete, onInvite }) => {
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const isEditMode = !!event.id;
 
     const formatDateTimeInput = (date: Date) => {
@@ -39,9 +41,16 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
     };
 
     const handleDelete = () => {
-        if (window.confirm('Are you sure you want to delete this event?')) {
-            onDelete(event.id);
-        }
+        setIsDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        onDelete(event.id);
+        setIsDeleteDialogOpen(false);
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeleteDialogOpen(false);
     };
 
     const handleInvite = () => {
@@ -62,7 +71,8 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
                     onChange={e => setTitle(e.target.value)}
                 />
                 <label>Description</label>
-                <textarea
+                <input
+                    type="text"
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                 />
@@ -91,6 +101,13 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSubmit, onDel
                     <button onClick={onClose}>Cancel</button>
                 </div>
             </div>
+            {isDeleteDialogOpen && (
+                <ConfirmationDialog
+                message="Are you sure you want to delete this event?"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                />
+            )}
         </div>
     );
 };

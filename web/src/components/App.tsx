@@ -112,6 +112,7 @@ const App: React.FC = () => {
   const handleEventClick = (clickInfo: EventClickArg) => {
     console.log('Event clicked:', clickInfo.event);
     setSelectedEvent(clickInfo.event);
+    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
