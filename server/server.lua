@@ -14,7 +14,7 @@ RegisterNetEvent('prp_calendar:getEvents', function()
     -- Filter events where the user is an owner or guest
     local userEvents = {}
     for _, event in pairs(events) do
-        if event.owners[userId] or event.guests[userId] then
+        if table.contains(event.owners, userId) or table.contains(event.guests, userId) then
             table.insert(userEvents, event)
         end
     end
@@ -25,7 +25,6 @@ end)
 
 -- Event to create a new event
 RegisterNetEvent('prp_calendar:createEvent', function(eventData)
-    print("In createEvent")
     local playerId = source
     local identifiers = GetPlayerIdentifiers(playerId)
     local userId = identifiers[1]
@@ -38,11 +37,38 @@ RegisterNetEvent('prp_calendar:createEvent', function(eventData)
         location = eventData.location,
         start_time = eventData.start_time,
         end_time = eventData.end_time,
-        owners = {},
+        owners = {userId},
         guests = {}
     }
-    newEvent.owners[userId] = true
     events[eventId] = newEvent
 
     TriggerClientEvent('prp_calendar:refreshEvents', playerId)
 end)
+
+RegisterNetEvent('prp_calendar:printEvents', function()
+    print("printEvents start")
+    for _, event in pairs(events) do
+        PrintEvent(event)
+    end
+    print("printEvents end")
+end)
+
+function PrintEvent(event)
+    print("Event ID: " .. event.id)
+    print("Title: " .. event.title)
+    print("Description: " .. event.description)
+    print("Location: " .. event.location)
+    print("Start Time: " .. event.start_time)
+    print("End Time: " .. event.end_time)
+    print("Owners: " .. table.concat(event.owners, ", "))
+    print("Guests: " .. table.concat(event.guests, ", "))
+end
+
+function table.contains(table, element)
+    for _, value in pairs(table) do
+        if value == element then
+            return true
+        end
+    end
+    return false
+end

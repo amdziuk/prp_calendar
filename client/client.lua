@@ -8,6 +8,11 @@ RegisterCommand('calendar', function()
   debugPrint('Show NUI frame')
 end, false)
 
+RegisterCommand('print_events', function()
+  print('[Calendar] Print Events')
+  TriggerServerEvent('prp_calendar:printEvents')
+end, false)
+
 RegisterNUICallback('hideFrame', function(_, cb)
   toggleNuiFrame(false)
   debugPrint('Hide NUI frame')
@@ -30,11 +35,6 @@ RegisterNetEvent('prp_calendar:receiveEvents', function(events)
   print('[Calendar] Received events from server')
   SendNUIMessage({ action = 'receiveEvents', events = events })
 end)
-
--- RegisterNetEvent('prp_calendar:eventCreated', function(response)
---   print('[Calendar] Event created', response.event)
---   SendNUIMessage({ action = 'eventCreated', event = response.event })
--- end)
 
 RegisterNetEvent('prp_calendar:refreshEvents', function()
   print('[Calendar] Refresh Events')
