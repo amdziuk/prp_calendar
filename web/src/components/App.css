@@ -18,7 +18,7 @@
 
 /* FullCalendar styles override */
 .fc-event {
-  background-color: #28a745;
+  background-color: #a728a1;
   border: none;
   color: #fff;
   padding: 5px;
@@ -27,7 +27,7 @@
 }
 
 .fc-event:hover {
-  background-color: #218838;
+  background-color: #8a1d84;
 }
 
 /* Day cell hover effect */
@@ -37,12 +37,12 @@
 
 /* TimeGrid styles */
 .fc-timegrid-event {
-  background-color: #12da3d;
+  background-color: #a728a1;
   border: none;
 }
 
 .fc-timegrid-event:hover {
-  background-color: #b61616;
+  background-color: #8a1d84;
 }
 
 /* Today's date highlight */

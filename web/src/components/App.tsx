@@ -102,6 +102,7 @@ const App: React.FC = () => {
     }).catch((error) => {
       console.error('Error submitting event:', error);
     });
+    setModalOpen(false);
   };
 
   const handleInviteGuest = (eventData: any) => {
